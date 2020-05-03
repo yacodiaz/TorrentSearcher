@@ -116,7 +116,7 @@ session = requests.Session()
 
 qbit_login = "http://192.168.1.6:8080/api/v2/auth/login"
 qbit_add_torrent = "http://192.168.1.6:8080/api/v2/torrents/add"
-data_login = {'username': 'admin', 'password': '458511'}
+data_login = {'username': 'admin', 'password': 'adminadmin'}
 data_add_torrent = {'urls': magnet_link}
 
 login_post = session.post(qbit_login, data=data_login)

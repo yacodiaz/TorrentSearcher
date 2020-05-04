@@ -49,14 +49,19 @@ page_search = requests.get(url_search)
 soup_search = BeautifulSoup(page_search.content, 'html.parser')
 
 #Get the rows of a table
-rows_search = soup_search.find_all('tr')
-
+try:
+    rows_search = soup_search.find_all('tr')
+except:
+    print(bcolors.WARNING+"Table row not founded"+bcolors.ENDC)
 #Get the columns(cells) that im interested
 for row in rows_search:
-    name_column = soup_search.find_all('td', class_ = 'name')
-    seeds_column = soup_search.find_all('td', class_ = 'seeds')
-    leechs_column = soup_search.find_all('td', class_ = 'leeches')
-    size_column = soup_search.find_all('td', class_ = 'size')
+    try:
+        name_column = soup_search.find_all('td', class_ = 'name')
+        seeds_column = soup_search.find_all('td', class_ = 'seeds')
+        leechs_column = soup_search.find_all('td', class_ = 'leeches')
+        size_column = soup_search.find_all('td', class_ = 'size')
+    except:
+        print(bcolors.WARNING+"Table cells not founded"+bcolors.ENDC)
 
 link_file = list()
 name_file = list()
@@ -82,7 +87,20 @@ for a in name_column:
 table_files = pd.DataFrame({'Movie: ': name_file, '/t Movie seeds: ' : seeds_file, 'Movie Size: ' : size_file})
 print(table_files.iloc[0:10])
 
-selection = input("select a movie by index: ")
+selection = input("Select a movie by index: ")
+selection_parsed = int(selection)
+flag=True
+if selection_parsed < 10 or selection_parsed > 0 :
+    flag = False
+else:
+    flag = True
+
+while flag:
+    selection = input(bcolors.WARNING+"Please, choose a number between 0 and 10: "+bcolors.ENDC)
+    if selection_parsed > 10 or selection_parsed < 0 :
+        flag = True
+    else: flag=False
+
 
 #Select row in table
 row_selected = table_files.iloc[ int(selection) , 0 ]

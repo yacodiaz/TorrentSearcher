@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import os 
 import sys , subprocess
-
+import json
 os.system("cls")
 
 def open_magnet(magnet):
@@ -89,23 +89,20 @@ print(table_files.iloc[0:10])
 
 selection = input("Select a movie by index: ")
 selection_parsed = int(selection)
-flag=True
-if selection_parsed < 10 or selection_parsed > 0 :
-    flag = False
-else:
-    flag = True
+selection_parsed = int(selection)
+flag = True
 
 while flag:
-    selection = input(bcolors.WARNING+"Please, choose a number between 0 and 10: "+bcolors.ENDC)
-    if selection_parsed > 10 or selection_parsed < 0 :
-        flag = True
-    else: flag=False
-
+    if selection_parsed >9 or selection_parsed < 0:
+        selection= input(bcolors.WARNING+"There is no movie with index higher than 9 or lower than 0. Please select a movie again: "+bcolors.ENDC)
+        selection_parsed = int(selection)
+    else:
+        flag = False
 
 #Select row in table
-row_selected = table_files.iloc[ int(selection) , 0 ]
-link_selected_torrent = link_file[int(selection)]
-name_selected = name_file[int(selection)]
+row_selected = table_files.iloc[ int(selection_parsed) , 0 ]
+link_selected_torrent = link_file[int(selection_parsed)]
+name_selected = name_file[int(selection_parsed)]
 
 link_selected = "https://www.1337x.to"+link_selected_torrent
 
@@ -134,14 +131,53 @@ session = requests.Session()
 
 qbit_login = "http://192.168.1.6:8080/api/v2/auth/login"
 qbit_add_torrent = "http://192.168.1.6:8080/api/v2/torrents/add"
-data_login = {'username': 'admin', 'password': '458511'}
-data_add_torrent = {'urls': magnet_link}
+qbit_defaultSavePath = "http://192.168.1.6:8080/api/v2/app/defaultSavePath"
+qbit_get_torrentlist = "http://192.168.1.6:8080/api/v2/torrents/info"
+qbit_rename_torrent = "http://192.168.1.6:8080/api/v2/torrents/remame"
 
-login_post = session.post(qbit_login, data=data_login)
-add_post = session.post(qbit_add_torrent,data= data_add_torrent)
-#login
-print(bcolors.UNDERLINE+"LOGIN_POST: "+bcolors.ENDC+login_post.text)
-#print(bcolors.UNDERLINE+"LOGIN_POST WITHOUT PARSE: "+bcolors.ENDC+str(login_post))
-#add torrent
-print(bcolors.UNDERLINE+"ADD_POST: "+bcolors.ENDC+add_post.text)
-#print(bcolors.UNDERLINE+"ADD_POST WITHOUT PARSE: "+bcolors.ENDC+str(add_post))
+data_get_torrentlist = {'hashes'}
+data_login = {'username': 'admin', 'password': 'adminadmin'}
+data_add_torrent = {'urls': magnet_link, 'rename': name_selected}
+##LOGIN
+try:
+    login_post = session.post(qbit_login, data=data_login)
+    #login
+    print(bcolors.UNDERLINE+"LOGIN_POST: "+bcolors.ENDC+login_post.text)
+    #print(bcolors.UNDERLINE+"LOGIN_POST WITHOUT PARSE: "+bcolors.ENDC+str(login_post))
+except:
+    print(bcolors.FAIL+"ERROR: While login"+bcolors.ENDC)
+##GET DEFAULT SAVE PATH
+try:
+    defaultSavePath_get = session.get(qbit_defaultSavePath)
+    defaultSavePath = str(defaultSavePath_get.text)
+    #print("default save path: "+defaultSavePath)
+except:
+    print(bcolors.FAIL+"ERROR: While getting default save path"+bcolors.ENDC)
+#ADD TORRENT BY MAGNET
+try:
+    add_post = session.post(qbit_add_torrent,data= data_add_torrent)
+    #add torrent
+    print(bcolors.UNDERLINE+"ADD_POST: "+bcolors.ENDC+add_post.text)
+    #print(bcolors.UNDERLINE+"ADD_POST WITHOUT PARSE: "+bcolors.ENDC+str(add_post))
+except:
+    print(bcolors.FAIL+"ERROR: While adding torrent"+bcolors.ENDC)
+#try:
+torrent_list_get = session.get(qbit_get_torrentlist)
+torrent_list = json.loads(torrent_list_get.text)
+json_hash = torrent_list[0]['hash']
+print("TORRENT LIST:"+ json_hash)
+#except:
+   # print(bcolors.WARNING+"ERROR WHILE GETTING LIST TORRENTS"+bcolors.ENDC)
+data_rename_torrent = {'hash': json_hash,'name': name_selected}
+
+rename_post = session.post(qbit_rename_torrent, data = data_rename_torrent)
+print("Rename post response: "+rename_post.text)
+
+
+try:
+    movie_url = defaultSavePath+name_selected
+    print("movie url: "+movie_url)
+    open(movie_url)
+except:
+     print(bcolors.WARNING+"ERROR: While opening movie"+bcolors.ENDC)
+

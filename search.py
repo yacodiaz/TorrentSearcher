@@ -4,6 +4,9 @@ import pandas as pd
 import os 
 import sys , subprocess
 import json
+from movie import Movie
+
+
 os.system("cls")
 
 def open_magnet(magnet):

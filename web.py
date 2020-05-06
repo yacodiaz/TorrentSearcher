@@ -35,7 +35,6 @@ class web_controller():
         return default_save_path
     
     def post_add_torrent(self,movie):
-        movie = Movie()
         qbit_add_torrent = "http://192.168.1.6:8080/api/v2/torrents/add"
         data_add_torrent = {'urls': movie.link, 'rename': movie.name}
 
@@ -44,47 +43,49 @@ class web_controller():
         #print(bcolors.UNDERLINE+"ADD_POST WITHOUT PARSE: "+bcolors.ENDC+str(add_post))
     
     def get_table_movies(self, movie_to_search):
+        movies = list()
         search_movie_url = "https://www.1337x.to/category-search/"+movie_to_search+"/Movies/1/"
         page_search = requests.get(search_movie_url)
         soup_search = BeautifulSoup(page_search.content, 'html.parser')
-        #Get the rows of a table
+        
         try:
-            rows_search = soup_search.find_all('tr')
+            name_column = soup_search.find_all('td', class_ = 'name')
+            seeds_column = soup_search.find_all('td', class_ = 'seeds')
+            leechs_column = soup_search.find_all('td', class_ = 'leeches')
+            size_column = soup_search.find_all('td', class_ = 'size')
+            #links_column = soup_search.find_all('a')
         except:
-            print(bcolors.WARNING+"Table row not founded"+bcolors.ENDC)
-        for row in rows_search:
-            try:
-                name_column = soup_search.find_all('td', class_ = 'name')
-                seeds_column = soup_search.find_all('td', class_ = 'seeds')
-                leechs_column = soup_search.find_all('td', class_ = 'leeches')
-                size_column = soup_search.find_all('td', class_ = 'size')
-            except:
-                print(bcolors.WARNING+"Table cells not founded"+bcolors.ENDC)
+            print(bcolors.WARNING+"Table cells not founded"+bcolors.ENDC)
             
-        link_file = list()
-        name_file = list()
-        seeds_file = list()
-        leechs_file = list()
-        size_file = list()
 
-        #Parsing only the text of the tag
+        links_list = list()
+        names_list = list()
+        seeds_list = list()
+        leechs_list = list()
+        sizes_list = list()
+
+
         for n in name_column:
-            name_file.append(n.text)
+            names_list.append(n.text)
         for s in seeds_column:
-            seeds_file.append(s.text)
+            seeds_list.append(s.text)
         for l in leechs_column:
-            leechs_file.append(l.text)
+            leechs_list.append(l.text)
         for z in size_column:
-            size_file.append(z.text)
+            sizes_list.append(z.text)
         for a in name_column:
             for k in a.find_all('a'):
                 if '/torrent' in k.get('href'):
-                        link_file.append(k.get('href'))
+                    links_list.append(k.get('href'))
 
-        #Main table with data
-        table_files = pd.DataFrame({'Movie: ': name_file, '/t Movie seeds: ' : seeds_file, 'Movie Size: ' : size_file})
 
-        return table_files
+        movies_count = len(names_list)
+        for x in range(movies_count):
+            insert_movie = Movie(names_list[x], "https://www.1337x.to"+links_list[x], seeds_list[x], sizes_list[x], leechs_list[x])
+            movies.append(insert_movie)
+       
+        
+        return movies
 
 
 

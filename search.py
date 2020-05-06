@@ -4,9 +4,21 @@ import pandas as pd
 import os 
 import sys , subprocess
 import json
-from movie import Movie
+from torrent import Movie
+from web import web_controller
+
+data = web_controller().get_table_movies("cars")
+cont=0
+print("cantidad de datos: "+str(len(data)))
+
+for op in data:
+    print("NAME: "+data[cont].name)
+    print("SEEDS : "+data[cont].seeds)
+    print("LINK : "+data[cont].link)
+    print("SIZE : "+data[cont].size)
 
 
+    cont+=1
 os.system("cls")
 
 def open_magnet(magnet):
@@ -42,10 +54,7 @@ print(bcolors.WARNING + "This is an alpha version of a torrent-searcher thats wh
 
 movie_input = input(bcolors.HEADER+"What movie do you want to look for: "+bcolors.ENDC)
 url_search = "https://www.1337x.to/category-search/"+movie_input+"/Movies/1/"
-#print("URL: "+url)
 
-
-#Doing GET i think
 page_search = requests.get(url_search)
 
  #Parsing the html file

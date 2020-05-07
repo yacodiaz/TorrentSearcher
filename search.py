@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
-import os 
+import os
 import sys , subprocess
 import json
 from torrent import Movie
@@ -192,4 +192,3 @@ try:
     open(movie_url)
 except:
      print(bcolors.WARNING+"ERROR: While opening movie"+bcolors.ENDC)
-

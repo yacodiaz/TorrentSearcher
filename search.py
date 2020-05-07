@@ -1,24 +1,11 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
-import os
+import os 
 import sys , subprocess
 import json
 from torrent import Movie
 from web import web_controller
-
-data = web_controller().get_table_movies("cars")
-cont=0
-print("cantidad de datos: "+str(len(data)))
-
-for op in data:
-    print("NAME: "+data[cont].name)
-    print("SEEDS : "+data[cont].seeds)
-    print("LINK : "+data[cont].link)
-    print("SIZE : "+data[cont].size)
-
-
-    cont+=1
 os.system("cls")
 
 def open_magnet(magnet):
@@ -51,53 +38,13 @@ class bcolors:
 
 print(bcolors.WARNING + "This is an alpha version of a torrent-searcher thats why it sucks"+ bcolors.ENDC)
 
+web_operations = web_controller()
 
-movie_input = input(bcolors.HEADER+"What movie do you want to look for: "+bcolors.ENDC)
-url_search = "https://www.1337x.to/category-search/"+movie_input+"/Movies/1/"
-
-page_search = requests.get(url_search)
-
- #Parsing the html file
-soup_search = BeautifulSoup(page_search.content, 'html.parser')
-
-#Get the rows of a table
-try:
-    rows_search = soup_search.find_all('tr')
-except:
-    print(bcolors.WARNING+"Table row not founded"+bcolors.ENDC)
-#Get the columns(cells) that im interested
-for row in rows_search:
-    try:
-        name_column = soup_search.find_all('td', class_ = 'name')
-        seeds_column = soup_search.find_all('td', class_ = 'seeds')
-        leechs_column = soup_search.find_all('td', class_ = 'leeches')
-        size_column = soup_search.find_all('td', class_ = 'size')
-    except:
-        print(bcolors.WARNING+"Table cells not founded"+bcolors.ENDC)
-
-link_file = list()
-name_file = list()
-seeds_file = list()
-leechs_file = list()
-size_file = list()
-
-#Parsing only the text of the tag
-for n in name_column:
-    name_file.append(n.text)
-for s in seeds_column:
-    seeds_file.append(s.text)
-for l in leechs_column:
-    leechs_file.append(l.text)
-for z in size_column:
-    size_file.append(z.text)
-for a in name_column:
-    for k in a.find_all('a'):
-        if '/torrent' in k.get('href'):
-            link_file.append(k.get('href'))
+movie_search = input(bcolors.HEADER+"What movie do you want to look for: "+bcolors.ENDC)
+movies = web_operations.get_table_movies(movie_search)
 
 #Main table with data
-table_files = pd.DataFrame({'Movie: ': name_file, '/t Movie seeds: ' : seeds_file, 'Movie Size: ' : size_file})
-print(table_files.iloc[0:10])
+
 
 selection = input("Select a movie by index: ")
 selection_parsed = int(selection)
@@ -192,3 +139,4 @@ try:
     open(movie_url)
 except:
      print(bcolors.WARNING+"ERROR: While opening movie"+bcolors.ENDC)
+

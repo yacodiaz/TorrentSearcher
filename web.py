@@ -19,28 +19,6 @@ class bcolors:
 
 class web_controller():
     session = requests.Session()
-
-    def post_login(self,username, password):
-        link_login = "http://192.168.1.6:8080/api/v2/auth/login"
-        data_login = {'username': username, 'password': password}
-        
-        post_login = self.session.post(link_login, data=data_login)
-        print(bcolors.UNDERLINE+"LOGIN_POST: "+bcolors.ENDC+post_login.text)
-        #print(bcolors.UNDERLINE+"LOGIN_POST WITHOUT PARSE: "+bcolors.ENDC+str(login_post))
-
-    def get_default_save_path(self):
-        link_default_save_path = "http://192.168.1.6:8080/api/v2/app/defaultSavePath"
-        get_default_save_path = self.session.get(link_default_save_path)
-        default_save_path = str(get_default_save_path.text)
-        return default_save_path
-    
-    def post_add_torrent(self,movie):
-        qbit_add_torrent = "http://192.168.1.6:8080/api/v2/torrents/add"
-        data_add_torrent = {'urls': movie.link, 'rename': movie.name}
-
-        post_add_torrent = self.session.post(qbit_add_torrent,data= data_add_torrent)
-        print(bcolors.UNDERLINE+"ADD_POST: "+bcolors.ENDC+post_add_torrent.text)
-        #print(bcolors.UNDERLINE+"ADD_POST WITHOUT PARSE: "+bcolors.ENDC+str(add_post))
     
     def get_table_movies(self, movie_to_search):
         movies = list()
@@ -81,13 +59,36 @@ class web_controller():
 
         movies_count = len(names_list)
         for x in range(movies_count):
-            insert_movie = Movie(names_list[x], "https://www.1337x.to"+links_list[x], seeds_list[x], sizes_list[x], leechs_list[x])
+            insert_movie = Movie(names_list[x], "https://www.1337x.to"+links_list[x], seeds_list[x], sizes_list[x])
             movies.append(insert_movie)
        
         
         return movies
 
 
+"""
+    def post_login(self,username, password):
+        link_login = "http://192.168.1.6:8080/api/v2/auth/login"
+        data_login = {'username': username, 'password': password}
+        
+        post_login = self.session.post(link_login, data=data_login)
+        print(bcolors.UNDERLINE+"LOGIN_POST: "+bcolors.ENDC+post_login.text)
+        #print(bcolors.UNDERLINE+"LOGIN_POST WITHOUT PARSE: "+bcolors.ENDC+str(login_post))
+
+    def get_default_save_path(self):
+        link_default_save_path = "http://192.168.1.6:8080/api/v2/app/defaultSavePath"
+        get_default_save_path = self.session.get(link_default_save_path)
+        default_save_path = str(get_default_save_path.text)
+        return default_save_path
+    
+    def post_add_torrent(self,movie):
+        qbit_add_torrent = "http://192.168.1.6:8080/api/v2/torrents/add"
+        data_add_torrent = {'urls': movie.link, 'rename': movie.name}
+
+        post_add_torrent = self.session.post(qbit_add_torrent,data= data_add_torrent)
+        print(bcolors.UNDERLINE+"ADD_POST: "+bcolors.ENDC+post_add_torrent.text)
+        #print(bcolors.UNDERLINE+"ADD_POST WITHOUT PARSE: "+bcolors.ENDC+str(add_post))
+   """
 
 
     

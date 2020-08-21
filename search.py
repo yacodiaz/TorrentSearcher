@@ -59,9 +59,10 @@ while flag:
         flag = False
 
 #Select row in table
-row_selected = table_files.iloc[ int(selection_parsed) , 0 ]
-link_selected_torrent = link_file[int(selection_parsed)]
-name_selected = name_file[int(selection_parsed)]
+#CHECK
+#row_selected = table_files.iloc[ int(selection_parsed) , 0 ]
+#link_selected_torrent = link_file[int(selection_parsed)]
+#name_selected = name_file[int(selection_parsed)]
 
 link_selected = "https://www.1337x.to"+link_selected_torrent
 
